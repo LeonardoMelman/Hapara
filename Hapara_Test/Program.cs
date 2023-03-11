@@ -19,13 +19,13 @@ public class LRUCache{
     {
         int maxCapacity = 1000;
         int minCapacity = 1;
-        if (cap >= minCapacity || cap <= maxCapacity) //Checking capacity
+        if (cap >= minCapacity && cap <= maxCapacity) //Checking capacity
         {
             capacity = cap;
             left.next = right;
             right.prev = left;
         }
-        else Console.WriteLine("Capacity must be between " + minCapacity + " and " + maxCapacity);
+        else throw new InvalidOperationException("Cannot create cache. Capacity must be between " + minCapacity + " and " + maxCapacity);
     }
 
     public void insert(Node node){
@@ -36,16 +36,19 @@ public class LRUCache{
 
         if (node.key >= 0 && node.key <= maxKey)
         {
-            if (node.value >= 0 && node.key <= maxValue){
+            if (node.value >= 0 && node.key <= maxValue)
+            {
                 Node prev = right.prev;
                 Node next = right;
                 prev.next = next.prev = node;
                 node.next = next;
                 node.prev = prev;
             }
-            else Console.WriteLine("Value must be between " + minValue + " and " + maxValue); ;
+            else {
+                throw new InvalidOperationException("Cannot insert value. It must be between " + minValue + " and " + maxValue);
+            }
         }
-        else Console.WriteLine("Key must be between " + minKey + " and " + maxKey);
+        else throw new InvalidOperationException("Cannot insert value. Key must be between " + minKey + " and " + maxKey);
     }
 
     public void remove(Node node)
@@ -93,18 +96,25 @@ public class LRUCache{
 }
 
 public class Program{
-    static void Main(string[] args) {
-        LRUCache cache = new LRUCache(2);
-        cache.put(1, 1);
-        cache.put(2, 2);
-        Console.WriteLine(cache.get(1));
-        cache.put(3, 3);    // evicts key 2
-        Console.WriteLine(cache.get(2));
-        cache.put(4, 4);    // evicts key 1
-        Console.WriteLine(cache.get(1));
-        Console.WriteLine(cache.get(3));       // returns 3
-        Console.WriteLine(cache.get(4));       // returns 4
-        Console.WriteLine(cache.delete(3));    // returns 3
-        Console.WriteLine(cache.get(3));       // returns -1 (not found)
-    }
+    static void Main(string[] args)
+    {
+        try
+        {
+            LRUCache cache = new LRUCache(1001);
+            cache.put(1, 1);
+            cache.put(2, 2);
+            Console.WriteLine(cache.get(1));
+            cache.put(3, 3);    // evicts key 2
+            Console.WriteLine(cache.get(2));
+            cache.put(4, 4);    // evicts key 1
+            Console.WriteLine(cache.get(1));
+            Console.WriteLine(cache.get(3));       // returns 3
+            Console.WriteLine(cache.get(4));       // returns 4
+            Console.WriteLine(cache.delete(3));    // returns 3
+            Console.WriteLine(cache.get(3));       // returns -1 (not found)
+        }
+        catch (Exception e) {
+            Console.WriteLine(e.ToString());
+        }
+    }   
 }
